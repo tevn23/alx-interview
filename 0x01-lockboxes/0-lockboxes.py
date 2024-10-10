@@ -4,7 +4,7 @@ Implemeting a method that determines if all the boxes can be opened
 """
 
 
-def can_unlock_all(boxes):
+def canUnlockAll(boxes):
     """Determines if all boxes can be unlocked."""
     unlocked = {0}  # The set of unlocked boxes
     keys = [0]      # Stack to explore boxes starting from box 0

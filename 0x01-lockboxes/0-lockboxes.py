@@ -4,18 +4,22 @@ Implemeting a method that determines if all the boxes can be opened
 """
 
 
-def canUnlockAll(boxes):
-    """Method that determines if all boxes can be unlocked"""
-     position = 0
-    unlocked = {}
+def can_unlock_all(boxes):
+    """Determines if all boxes can be unlocked."""
+    unlocked = {0}  # The set of unlocked boxes
+    keys = [0]      # Stack to explore boxes starting from box 0
 
-    for box in boxes:
-        if len(box) == 0 or position == 0:
-            unlocked[position] = "always_unlocked"
-        for key in box:
-            if key < len(boxes) and key != position:
-                unlocked[key] = key
-        if len(unlocked) == len(boxes):
-            return True
-        position += 1
-    return False
+    while keys:
+        current_box = keys.pop()  # Take a box to explore
+
+        for key in boxes[current_box]:
+            if key not in unlocked and key < len(boxes):
+                unlocked.add(key)
+                keys.append(key)
+
+    # Explicitly return True if all boxes are unlocked, else return False
+    if len(unlocked) == len(boxes):
+        return True
+    else:
+        return False
+

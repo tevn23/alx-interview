@@ -3,71 +3,86 @@
 import sys
 
 
-class NQueen:
-    """ Class for solving N Queen Problem """
+def is_safe(board, row, col):
+    """
+    Check if it's safe to place a queen at the given row and column.
 
-    def __init__(self, n):
-        """ Global Variables """
-        self.n = n
-        self.x = [0 for i in range(n + 1)]
-        self.res = []
+    Args:
+        board (list): Current state of the board with queen positions.
+        row (int): Row index for the queen to be placed.
+        col (int): Column index for the queen to be placed.
 
-    def place(self, k, i):
-        """ Checks if k Queen can be placed in i column (True)
-        or if the are attacking queens in row or diagonal (False)
+    Returns:
+        bool: True if the position is safe, False otherwise.
+    """
+    for i in range(row):
+        if board[i] == col or \
+           board[i] - i == col - row or \
+           board[i] + i == col + row:
+            return False
+    return True
+
+
+def solve_nqueens(N):
+    """
+    Solve the N-Queens problem and print all possible solutions.
+
+    Args:
+        N (int): Size of the board (N x N) and number of queens to place.
+    """
+    def place_queens(board, row):
         """
+        Recursively place queens on the board and print solutions.
 
-        # j checks from 1 to k - 1 (Up to previous queen)
-        for j in range(1, k):
-            # There is already a queen in column
-            # or a queen in same diagonal
-            if self.x[j] == i or \
-               abs(self.x[j] - i) == abs(j - k):
-                return 0
-        return 1
-
-    def nQueen(self, k):
-        """ Tries to place every queen in the board
         Args:
-        k: starting queen from which to evaluate (should be 1)
+            board (list): Current state of the board with queen positions.
+            row (int): Current row to attempt to place a queen.
         """
-        # i goes from column 1 to column n (1st column is 1st index)
-        for i in range(1, self.n + 1):
-            if self.place(k, i):
-                # Queen can be placed in i column
-                self.x[k] = i
-                if k == self.n:
-                    # Placed all 4 Queens (A solution was found)
-                    solution = []
-                    for i in range(1, self.n + 1):
-                        solution.append([i - 1, self.x[i] - 1])
-                    self.res.append(solution)
-                else:
-                    # Need to place more Queens
-                    self.nQueen(k + 1)
-        return self.res
+        if row == N:
+            print_solution(board)
+            return
+        for col in range(N):
+            if is_safe(board, row, col):
+                board[row] = col
+                place_queens(board, row + 1)
+
+    def print_solution(board):
+        """
+        Print a single solution in the required format.
+
+        Args:
+            board (list): Finalized board configuration with queen positions.
+        """
+        print([[i, board[i]] for i in range(N)])
+
+    board = [-1] * N
+    place_queens(board, 0)
 
 
-# Main
+def main():
+    """
+    Parse command-line arguments and initiate the N-Queens solver.
 
-if len(sys.argv) != 2:
-    print("Usage: nqueens N")
-    sys.exit(1)
+    Validates the input to ensure the correct number of arguments, that N is
+    an integer, and that N is at least 4. Prints error messages and exits if
+    the input is invalid.
+    """
+    if len(sys.argv) != 2:
+        print("Usage: nqueens N")
+        sys.exit(1)
 
-N = sys.argv[1]
+    try:
+        N = int(sys.argv[1])
+    except ValueError:
+        print("N must be a number")
+        sys.exit(1)
 
-try:
-    N = int(N)
-except ValueError:
-    print("N must be a number")
-    sys.exit(1)
+    if N < 4:
+        print("N must be at least 4")
+        sys.exit(1)
 
-if N < 4:
-    print("N must be at least 4")
-    sys.exit(1)
+    solve_nqueens(N)
 
-queen = NQueen(N)
-res = queen.nQueen(1)
 
-for i in res:
-    print(i)
+if __name__ == "__main__":
+    main()
